@@ -30,66 +30,92 @@
 ## 🧱 Estrutura do Projeto
 
 ### 🔹 Módulo 1 – Ingestão e Pré-processamento com PySpark
-- Leitura do dataset no ambiente distribuído
-- Limpeza textual, tokenização e stopwords
-- Conversão de colunas e tratamento de tipos
+
+- **1.1** Leitura do dataset no ambiente distribuído
+- **1.2** Conversão de tipos e limpeza estrutural
+- **1.3** Limpeza textual e normalização
+- **1.4** Tokenização e remoção de stopwords
+- **1.5** Criação de colunas derivadas para análise
+
+---
 
 ### 🔹 Módulo 2 – Análise Exploratória de Dados (EDA)
-- 2.1 Visão Geral dos Dados
-- 2.2 Distribuição das Categorias
-- 2.3 Frequência de Palavras por Categoria (Análise Quantitativa)
-- 2.4 Frequência de N-Gramas (Bigramas e Trigramas)
-- 2.5 Comprimento dos Textos
-- 2.6 Correlações entre Rótulos e Padrões Linguísticos
+
+- **2.1** Visão Geral dos Dados
+- **2.2** Distribuição das Categorias (Balanceamento)
+- **2.3** Frequência de Palavras por Categoria (Análise Quantitativa)
+- **2.4** Frequência de N-Gramas (Bigramas e Trigramas)
+- **2.5** Comprimento dos Textos
+- **2.6** Correlações entre Rótulos e Padrões Linguísticos
+
+---
 
 ### 🔹 Módulo 3 – Engenharia de Features e Modelagem
-- Vetorização com TF-IDF
-- Treinamento de modelos supervisionados (LogReg, Random Forest)
-- Métricas de desempenho: F1, ROC AUC, Matriz de Confusão
-- Tracking de experimentos com MLFlow
+
+- **3.1** Vetorização com TF-IDF e CountVectorizer
+- **3.2** Treinamento de modelos supervisionados (LogReg, Random Forest)
+- **3.3** Avaliação com F1-Score, ROC AUC e Matriz de Confusão
+- **3.4** Tracking de experimentos com MLFlow
+- **3.5** Seleção e salvamento do melhor modelo baseline
+
+---
 
 ### 🔹 Módulo 4 – Aplicação de LLMs
-- Geração de embeddings com OpenAI / HuggingFace
-- Classificação zero-shot e few-shot
-- Comparação entre modelos tradicionais e LLMs
-- Geração de explicações automáticas por LLM
+
+- **4.1** Geração de embeddings com OpenAI ou HuggingFace
+- **4.2** Classificação zero-shot e few-shot
+- **4.3** Comparação com modelos tradicionais
+- **4.4** Geração de explicações automáticas por LLM
+
+---
 
 ### 🔹 Módulo 5 – MLOps e Deploy
-- Pipeline de treinamento com MLFlow
-- API com FastAPI
-- Containerização com Docker
-- Deploy em Azure ML ou local
-- CI/CD com GitHub Actions
-- Orquestração com Airflow (simulação de pipeline)
+
+- **5.1** Criação do pipeline com MLFlow
+- **5.2** API REST com FastAPI
+- **5.3** Containerização com Docker
+- **5.4** Deploy local ou em Azure ML
+- **5.5** CI/CD com GitHub Actions
+- **5.6** Orquestração simulada com Airflow
+
+---
 
 ### 🔹 Módulo 6 – Validação Avançada e A/B Testing
-- Comparação entre modelos
-- Testes estatísticos (t-test, bootstrap, etc.)
-- Interpretação dos resultados
+
+- **6.1** Comparação entre modelos tradicionais e LLMs
+- **6.2** Testes estatísticos (t-test, bootstrap)
+- **6.3** Interpretação dos resultados com base em significância
+
+---
 
 ### 🔹 Módulo 7 – Interface Visual Interativa
-- App em Streamlit ou Gradio
-- Campo de input para classificação de novos tweets
-- Retorno explicável (LLM ou SHAP)
+
+- **7.1** Desenvolvimento de app com Streamlit ou Gradio
+- **7.2** Campo de input para novos tweets
+- **7.3** Exibição da categoria e explicação via SHAP ou LLM
+- **7.4** Deploy acessível para demonstração
+
+---
 
 ### 🔹 Módulo 8 – Documentação e Storytelling Técnico
-- README completo e visual
-- Prints e artefatos do pipeline
-- Apresentação clara e objetiva no GitHub
+
+- **8.1** Estruturação do README no GitHub
+- **8.2** Registro visual das etapas (prints, imagens)
+- **8.3** Apresentação didática para portfólio técnico
 
 ---
 
 ## 📌 Status do Projeto
 
-- 🔧 Em andamento – Módulo 2: Análise Exploratória de Dados (EDA)
-- ✅ Módulos concluídos: 1. Ingestão e Pré-processamento
-- 🚧 Próximo passo: Frequência de N-Gramas (2.4)
+- ✅ Módulo 1 concluído
+- 🟡 Módulo 2 em andamento (atualmente no item 2.4)
+- ⏳ Próximo passo: Análise de N-Gramas e Comprimento dos Textos
 
 ---
 
 ## 📎 Licença
 
-Este projeto é de código aberto sob a licença MIT. Sinta-se à vontade para utilizar e adaptar!
+Este projeto é de código aberto sob a licença MIT. Sinta-se à vontade para utilizar, referenciar e adaptar.
 
 ---
 
