@@ -32,10 +32,9 @@
 ### 🔹 Módulo 1 – Ingestão e Pré-processamento com PySpark
 
 - **1.1** Leitura do dataset no ambiente distribuído
-- **1.2** Conversão de tipos e limpeza estrutural
-- **1.3** Limpeza textual e normalização
-- **1.4** Tokenização e remoção de stopwords
-- **1.5** Criação de colunas derivadas para análise
+- **1.2** Limpeza textual e normalização
+- **1.3** Tokenização e remoção de stopwords
+- **1.4** Salvar em parquet
 
 ---
 
