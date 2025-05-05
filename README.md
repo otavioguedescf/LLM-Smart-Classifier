@@ -1,7 +1,5 @@
 # 🤖 LLM Smart Classifier
 
-**Big Data (PySpark), NPL, LLMs, MLOps e deploy em nuvem**
-
 **Objetivo:** Desenvolver um pipeline completo de classificação de tweets relacionados a desastres humanitários, utilizando tecnologias modernas de Big Data (PySpark), NLP tradicional, LLMs, MLOps e deploy em nuvem, com visualização interativa e documentação profissional.
 
 ---
