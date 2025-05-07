@@ -51,7 +51,7 @@
 
 ### 🔹 Módulo 3 – Engenharia de Features e Modelagem
 
-- **3.1** Vetorização com TF-IDF e CountVectorizer
+- **3.1** Vetorização com TF-IDF (n-gramas de 1 a 3)
 - **3.2** Treinamento de modelos supervisionados (LogReg, Random Forest)
 - **3.3** Avaliação com F1-Score, ROC AUC e Matriz de Confusão
 - **3.4** Tracking de experimentos com MLFlow
