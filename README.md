@@ -53,7 +53,7 @@
 
 - **3.1** Vetorização com TF-IDF (n-gramas de 1 a 3)
 - **3.2** Treinamento de modelos supervisionados (LogReg, Random Forest)
-- **3.3** Avaliação com F1-Score, ROC AUC e Matriz de Confusão
+- **3.3** Avaliação com F1-Score e Matriz de Confusão
 - **3.4** Tracking de experimentos com MLFlow
 - **3.5** Seleção e salvamento do melhor modelo baseline
 
