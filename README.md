@@ -163,3 +163,64 @@ df_tokens_filtrados.write.mode("overwrite").parquet("/tmp/humaid_dados_limpos")
 df_pronto= spark.read.parquet("/tmp/humaid_dados_limpos")
 df_pronto.show(5, truncate=False)
 ```
+---
+
+## 🔹 Módulo 2 – Análise Exploratória de Dados (EDA)
+
+**Objetivo:**  
+Compreender a estrutura, distribuição e principais características dos tweets humanitários após o pré-processamento. Essa etapa permite identificar padrões, anomalias e orientar decisões futuras na modelagem.
+
+---
+
+### 2.1 Visão Geral dos Dados
+
+**Objetivo da etapa:**  
+Realizar uma análise inicial para entender:
+- O volume total de registros disponíveis;
+- A estrutura e os tipos das colunas;
+- Presença de valores nulos;
+- Exemplo de registros após limpeza.
+
+---
+
+*Trecho de código:*
+```python
+# Contar o total de linhas
+print("Total de tweets:", df_tokens_filtrados.count())
+
+# Ver categorias únicas
+df_tokens_filtrados.select("class_label").distinct().show(truncate=False)
+
+# Verificando a contagem de linhas por categoria
+df_tokens_filtrados.groupby("class_label").count().orderBy("count", ascending=False).show(truncate=False)
+```
+
+---
+
+### 2.2 Distribuição das Categorias (Balanceamento)
+
+**Objetivo:**  
+Analisar a variável-alvo `class_label` para entender o **balanceamento entre as categorias humanitárias**. Isso é crucial para identificar possíveis desequilíbrios que possam influenciar negativamente os modelos de classificação supervisionada.
+
+---
+
+**Transformações e ações aplicadas:**
+
+- ✅ Agrupamento por categoria com contagem de ocorrências;
+- ✅ Ordenação decrescente para facilitar a análise;
+- ✅ Geração de gráfico de barras para visualização do desequilíbrio.
+
+---
+
+*Trecho de código:*
+```python
+# Agrupar em categorias
+df_labels = df_tokens_filtrados.groupBy("class_label").count()
+
+# Ordenar categorias do maior para o menor
+df_labels = df_labels.orderBy("count",ascending=False)
+
+# Converter para o pandas
+df_labels = df_labels.toPandas()
+```
+---
