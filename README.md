@@ -101,3 +101,38 @@ df_limpo = df_total.withColumn("text_clean", limpar_udf(col("tweet_text")))
 
 # Visualizando resultado
 df_limpo.select("tweet_text", "text_clean").show(10, truncate=False)
+```
+---
+
+### 1.3 Tokenização e remoção de stopwords
+
+**Objetivo:**  
+Transformar os textos limpos em **listas de palavras relevantes**, removendo palavras comuns (como "the", "and", "is", etc.) que não agregam valor semântico. Essa etapa é essencial para preparar os dados para análise textual e modelagem supervisionada.
+
+---
+
+**Transformações aplicadas:**
+
+- ✅ **Tokenização:** separação do texto em palavras individuais (*tokens*);
+- ✅ **Remoção de stopwords:** exclusão de palavras muito frequentes e com pouco significado no contexto de NLP;
+- ✅ **Nova coluna gerada:** `tokens_filtrados`, contendo as listas de palavras úteis.
+
+---
+
+*Trecho de código:*
+```python
+# Etapa 1: Tokenização
+from pyspark.ml.feature import Tokenizer
+
+tokenizer = Tokenizer(inputCol="text_clean", outputCol="tokens")
+df_tokens = tokenizer.transform(df_limpo)
+
+# Etapa 2: Remoção de stopwords
+from pyspark.ml.feature import StopWordsRemover
+
+remover = StopWordsRemover(inputCol="tokens", outputCol="tokens_filtrados")
+df_tokens_filtrados = remover.transform(df_tokens)
+
+# Visualizando o resultado
+display(df_tokens_filtrados.head(5))
+```
