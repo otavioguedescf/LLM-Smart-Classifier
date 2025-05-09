@@ -356,5 +356,42 @@ df_ngrams_limpo = pd.DataFrame(rows)
 ```
 ---
 
+### 2.6 Correlações entre Rótulos e Padrões Linguísticos
+
+**Objetivo:**  
+Investigar se existem **correlações entre características linguísticas** (como comprimento do texto e presença de determinadas palavras) e os rótulos das categorias humanitárias. Essa análise ajuda a entender **quais padrões o modelo pode aprender para distinguir entre as classes**.
+
+---
+
+**Transformações e ações aplicadas:**
+
+- ✅ Uso da coluna `text_length` criada anteriormente;
+- ✅ Análise de palavras-chave mais frequentes por categoria;
+- ✅ Cálculo de medidas estatísticas básicas para comparar os grupos.
+
+---
+
+*Trecho de código – Distribuição do comprimento por categoria:*
+```python
+# Frequência de palavras por categoria
+
+from pyspark.sql.functions import count
+
+df_freq = df_exploded_limpo.groupBy("class_label", "token").agg(count("*").alias("freq"))
+df_freq.show(5, truncate=False)
+
+# Converter para pandas
+df_freq_pd = df_freq.toPandas()
+
+# Obter top 10 palavras por categoria
+top_tokens_por_categoria = (
+    df_freq_pd.sort_values("freq", ascending=False)
+    .groupby("class_label")
+    .head(10)
+    .reset_index(drop=True)
+)
+```
+
+---
 
 
