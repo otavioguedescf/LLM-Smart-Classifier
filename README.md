@@ -401,19 +401,19 @@ Transformar os textos em representações numéricas (vetores) que possam ser co
 
 ---
 
-### 3.1 Vetorização com TF-IDF e CountVectorizer
+### 3.1 Vetorização com TF-IDF (Scikit-learn)
 
-**Objetivo da etapa:**  
-Converter os tokens dos tweets (`tokens_filtrados`) em vetores numéricos usando duas técnicas amplamente utilizadas em NLP:
-- **CountVectorizer:** contabiliza a frequência de cada palavra;
-- **TF-IDF (Term Frequency – Inverse Document Frequency):** penaliza palavras muito comuns e valoriza as mais distintivas.
+**Objetivo:**  
+Transformar os textos dos tweets em vetores numéricos utilizando a técnica **TF-IDF (Term Frequency – Inverse Document Frequency)** com o `TfidfVectorizer` do Scikit-learn. Essa técnica permite que os modelos identifiquem quais palavras (ou sequências de palavras) são mais relevantes para classificar corretamente cada tipo de emergência.
 
 ---
 
 **Transformações e ações aplicadas:**
 
-- ✅ Tokenização já feita previamente na coluna `tokens_filtrados`;
-- ✅ Aplicação do `IDF` para gerar vetores TF-IDF a partir da contagem;
+- ✅ Reconstrução do texto original a partir dos tokens filtrados;
+- ✅ Conversão do DataFrame PySpark para Pandas;
+- ✅ Aplicação do `TfidfVectorizer` com n-gramas (1 a 3 palavras);
+- ✅ Criação da matriz esparsa `X` com até 5.000 features.
 
 ---
 
