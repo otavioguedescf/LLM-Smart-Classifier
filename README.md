@@ -154,11 +154,6 @@ Persistir os dados pré-processados em um formato otimizado (`Parquet`), garanti
 
 ---
 
-**Caminho de salvamento:**  
-`/FileStore/datasets/humaid_parquet`
-
----
-
 *Trecho de código:*
 ```python
 # Salvar DataFrame como .parquet
