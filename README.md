@@ -394,4 +394,177 @@ top_tokens_por_categoria = (
 
 ---
 
+## 🔹 Módulo 3 – Engenharia de Features e Modelagem
+
+**Objetivo:**  
+Transformar os textos em representações numéricas (vetores) que possam ser compreendidas por algoritmos de Machine Learning. Em seguida, treinar modelos supervisionados para prever a categoria humanitária de novos tweets com base em seus conteúdos.
+
+---
+
+### 3.1 Vetorização com TF-IDF e CountVectorizer
+
+**Objetivo da etapa:**  
+Converter os tokens dos tweets (`tokens_filtrados`) em vetores numéricos usando duas técnicas amplamente utilizadas em NLP:
+- **CountVectorizer:** contabiliza a frequência de cada palavra;
+- **TF-IDF (Term Frequency – Inverse Document Frequency):** penaliza palavras muito comuns e valoriza as mais distintivas.
+
+---
+
+**Transformações e ações aplicadas:**
+
+- ✅ Tokenização já feita previamente na coluna `tokens_filtrados`;
+- ✅ Aplicação do `IDF` para gerar vetores TF-IDF a partir da contagem;
+
+---
+
+*Trecho de código:*
+```python
+# Juntar palavras no texto
+from pyspark.sql.functions import concat_ws
+
+df_texto = df_tokens_filtrados_limpos.select(
+    "class_label",
+    concat_ws(" ", "tokens_filtrados").alias("texto")
+)
+
+# Converter para Pandas
+df_modelo = df_texto.toPandas()
+
+# Vetorização com TF-IDF + N-gramas
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+vectorizer = TfidfVectorizer(ngram_range=(1,3), max_features=5000)
+X = vectorizer.fit_transform(df_modelo["texto"])
+```
+
+---
+
+### 3.2 Treinamento de modelos supervisionados (LogReg, Random Forest)
+
+**Objetivo:**  
+Treinar modelos de classificação supervisionada utilizando os vetores TF-IDF gerados anteriormente, com o objetivo de prever a categoria (`class_label`) de cada tweet humanitário.
+
+---
+
+**Modelos utilizados:**
+
+- ✅ **Logistic Regression (LogReg):** modelo linear bastante eficiente para classificações multiclasses com vetores esparsos.
+- ✅ **Random Forest Classifier:** modelo de ensemble baseado em árvores de decisão, mais robusto a não-linearidades e variações.
+
+---
+
+*Trecho de código:*
+```python
+# Separar treino e teste
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, stratify=y, random_state=42
+)
+
+# Treinar o modelo Regressão Logistica
+from sklearn.linear_model import LogisticRegression
+
+logreg = LogisticRegression(max_iter=1000, random_state=42)
+logreg.fit(X_train, y_train)
+```
+
+---
+
+### 3.3 Avaliação com F1-Score e Matriz de Confusão
+
+**Objetivo:**  
+Avaliar o desempenho dos modelos Logistic Regression e Random Forest utilizando métricas apropriadas para classificação multiclasse, com foco em **F1-Score**, **Acurácia** e **Matriz de Confusão**.
+
+---
+
+**Métricas utilizadas:**
+
+- ✅ **F1-Score (macro):** média harmônica entre precisão e recall, ponderada igualmente entre as classes;
+- ✅ **Acurácia:** proporção de classificações corretas sobre o total;
+- ✅ **Matriz de Confusão:** mostra visualmente os acertos e erros por classe.
+
+---
+
+**Ações aplicadas:**
+
+- Geração de predições no conjunto de teste;
+- Visualização da matriz de confusão com Pandas e Seaborn.
+
+---
+
+*Trecho de código:*
+```python
+# Avaliar os dois modelos
+from sklearn.metrics import classification_report, f1_score, confusion_matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Avaliação - Logistic Regression
+y_pred_logreg = logreg.predict(X_test)
+print("📊 Logistic Regression:")
+print(classification_report(y_test, y_pred_logreg))
+
+# Avaliação - Random Forest
+y_pred_rf = rf.predict(X_test)
+print("📊 Random Forest:")
+print(classification_report(y_test, y_pred_rf))
+```
+
+---
+
+### 3.4 Tracking de experimentos com MLflow
+
+**Objetivo:**  
+Rastrear os experimentos de machine learning com o MLflow, registrando automaticamente métricas, parâmetros, modelos e artefatos. Isso permite **comparar modelos, reproduzir resultados e documentar a evolução do projeto de forma profissional**.
+
+---
+
+**Recursos monitorados:**
+
+- ✅ Métricas: F1-score, acurácia;
+- ✅ Parâmetros dos modelos (ex: `maxIter`, `numTrees`);
+- ✅ Artefatos: modelo treinado, matriz de confusão, configurações;
+- ✅ Tags e anotações manuais para melhor organização.
+
+---
+
+**Configuração inicial:**
+```python
+import mlflow
+import mlflow.sklearn
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, f1_score
+
+# Caminho válido dentro do Databricks
+experiment_name = "/Shared/llm-smart-classifier"
+
+# Cria o experimento se não existir
+experiment = mlflow.get_experiment_by_name(experiment_name)
+if experiment is None:
+    experiment_id = mlflow.create_experiment(experiment_name)
+else:
+    experiment_id = experiment.experiment_id
+
+# Inicia o tracking com o experimento criado
+with mlflow.start_run(experiment_id=experiment_id):
+    model = LogisticRegression(max_iter=1000)
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+
+    mlflow.log_param("model", "LogisticRegression")
+    mlflow.log_param("max_iter", 1000)
+    mlflow.log_param("ngram_range", (1, 3))
+    mlflow.log_param("max_features", 5000)
+
+    mlflow.log_metric("accuracy", accuracy_score(y_test, y_pred))
+    mlflow.log_metric("f1_weighted", f1_score(y_test, y_pred, average="weighted"))
+
+    mlflow.sklearn.log_model(model, "model")
+```
+
+---
+
+
 
