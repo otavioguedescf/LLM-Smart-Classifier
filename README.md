@@ -47,7 +47,7 @@ dbutils.fs.cp("dbfs:/FileStore/tables/humaid_eventwise.zip", "file:/tmp/humaid_e
 # Extraindo
 with zipfile.ZipFile("/tmp/humaid_eventwise.zip", 'r') as zip_ref:
     zip_ref.extractall("/tmp/humaid_eventwise")
-
+```
 ---
 
 ### 1.2 Limpeza textual e normalização
