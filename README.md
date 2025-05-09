@@ -47,3 +47,57 @@ dbutils.fs.cp("dbfs:/FileStore/tables/humaid_eventwise.zip", "file:/tmp/humaid_e
 # Extraindo
 with zipfile.ZipFile("/tmp/humaid_eventwise.zip", 'r') as zip_ref:
     zip_ref.extractall("/tmp/humaid_eventwise")
+
+---
+
+### 1.2 Limpeza textual e normalização
+
+**Objetivo:**  
+Preparar os textos dos tweets para processamento linguístico, removendo ruídos e padronizando a estrutura textual. Esta etapa é essencial para melhorar a qualidade dos dados e garantir resultados mais precisos nos próximos módulos de análise e modelagem.
+
+---
+
+**Transformações aplicadas:**
+
+- ✅ Conversão de todos os caracteres para minúsculas;
+- ✅ Remoção de:
+  - **Links/URLs** (ex: `http://...`);
+  - **Menções** (ex: `@username`);
+  - **Hashtags** (ex: `#emergência`);
+  - **Pontuação e caracteres especiais** (ex: `!`, `?`, `...`);
+  - **Emojis** e **símbolos não textuais**;
+  - **Múltiplos espaços em branco**.
+
+---
+
+**Nova coluna criada:** `text_clean`  
+Essa coluna representa o conteúdo textual limpo de cada tweet.
+
+---
+
+*Trecho de código:*
+```python
+from pyspark.sql.functions import udf, col
+from pyspark.sql.types import StringType
+import re
+
+# Função Python para limpeza
+def limpar_texto(texto):
+    if texto:
+        texto = texto.lower()
+        texto = re.sub(r"http\S+", "", texto)                     # Remove links
+        texto = re.sub(r"rt\s+@[\w_]+:? ?", "", texto)            # Remove RTs com @usuario
+        texto = re.sub(r"@\w+", "", texto)                        # Remove todas as outras menções
+        texto = re.sub(r"#\w+", "", texto)                        # Remove hashtags
+        texto = re.sub(r"[^\w\s]", "", texto)                     # Remove pontuação
+        texto = re.sub(r"\s+", " ", texto).strip()                # Espaços extras
+    return texto
+
+# Registrando a função como UDF do PySpark
+limpar_udf = udf(limpar_texto, StringType())
+
+# Criando nova coluna com texto limpo
+df_limpo = df_total.withColumn("text_clean", limpar_udf(col("tweet_text")))
+
+# Visualizando resultado
+df_limpo.select("tweet_text", "text_clean").show(10, truncate=False)
