@@ -48,6 +48,7 @@ dbutils.fs.cp("dbfs:/FileStore/tables/humaid_eventwise.zip", "file:/tmp/humaid_e
 with zipfile.ZipFile("/tmp/humaid_eventwise.zip", 'r') as zip_ref:
     zip_ref.extractall("/tmp/humaid_eventwise")
 ```
+
 ---
 
 ### 1.2 Limpeza textual e normalização
@@ -102,6 +103,7 @@ df_limpo = df_total.withColumn("text_clean", limpar_udf(col("tweet_text")))
 # Visualizando resultado
 df_limpo.select("tweet_text", "text_clean").show(10, truncate=False)
 ```
+
 ---
 
 ### 1.3 Tokenização e remoção de stopwords
@@ -136,6 +138,7 @@ df_tokens_filtrados = remover.transform(df_tokens)
 # Visualizando o resultado
 display(df_tokens_filtrados.head(5))
 ```
+
 ---
 
 ### 1.4 Salvamento em formato Parquet
@@ -163,6 +166,7 @@ df_tokens_filtrados.write.mode("overwrite").parquet("/tmp/humaid_dados_limpos")
 df_pronto= spark.read.parquet("/tmp/humaid_dados_limpos")
 df_pronto.show(5, truncate=False)
 ```
+
 ---
 
 ## 🔹 Módulo 2 – Análise Exploratória de Dados (EDA)
@@ -223,4 +227,134 @@ df_labels = df_labels.orderBy("count",ascending=False)
 # Converter para o pandas
 df_labels = df_labels.toPandas()
 ```
+
 ---
+
+### 2.3 Frequência de Palavras por Categoria (Análise Quantitativa)
+
+**Objetivo:**  
+Identificar as **palavras mais frequentes dentro de cada categoria humanitária**, a fim de entender os termos mais característicos de cada tipo de situação. Essa análise ajuda na construção de vetores de texto mais representativos para os modelos.
+
+---
+
+**Transformações e ações aplicadas:**
+
+- ✅ Explosão da coluna `tokens_filtrados` em palavras individuais;
+- ✅ Agrupamento por `class_label` + `token`;
+- ✅ Contagem de ocorrências de cada palavra por categoria;
+- ✅ Filtragem das palavras mais frequentes por classe.
+
+---
+
+*Trecho de código:*
+```python
+# Selecionar categorias dominantes
+categorias_dominantes = ["rescue_volunteering_or_donation_effort","other_relevant_information","infrastructure_and_utility_damage","sympathy_and_support","injured_or_dead  _people"]
+
+# Filtrar nosso DataFrame com as categorias dominantes
+df_filtrado = df_tokens_filtrados.filter(df_tokens_filtrados["class_label"].isin(categorias_dominantes))
+
+df_filtrado.show(5)
+
+# Gerar texto concatenado com categoria
+from pyspark.sql.functions import explode, collect_list, concat_ws
+
+# Vamos explodir as palavras
+df_explode = df_filtrado.select("class_label", explode("tokens_filtrados").alias("token"))
+
+df_explode.show(5)
+```
+
+---
+
+### 2.4 Frequência de N-Gramas (Bigramas e Trigramas)
+
+**Objetivo:**  
+Explorar **composições de palavras mais comuns** (bigramas e trigramas) nos tweets humanitários. Isso permite capturar estruturas linguísticas relevantes, como “need food”, “medical help”, ou “people are trapped”, que carregam mais contexto do que palavras isoladas.
+
+---
+
+**Transformações e ações aplicadas:**
+
+- ✅ Utilização do `NGram` do PySpark para gerar bigramas e trigramas a partir da coluna `tokens_filtrados`;
+- ✅ Explosão e contagem de n-gramas;
+- ✅ Análise das expressões mais frequentes por categoria.
+
+---
+
+*Trecho de código (Bigramas):*
+```python
+from pyspark.sql.functions import size
+
+df_tokens_filtrados = df_tokens_filtrados.withColumn("text_length", size(col("tokens_filtrados")))
+df_tokens_filtrados.show(5)
+
+# Estatísticas das palavras
+df_tokens_filtrados.select("text_length").describe().show()
+```
+
+---
+
+### 2.5 Comprimento dos Textos
+
+**Objetivo:**  
+Analisar a **distribuição do comprimento dos textos**, medido em número de tokens, para entender o nível de complexidade linguística e possíveis padrões associados a diferentes categorias humanitárias.
+
+---
+
+**Transformações e ações aplicadas:**
+
+- ✅ Cálculo da quantidade de tokens em cada tweet (coluna `tokens_filtrados`);
+- ✅ Geração de histogramas para visualizar a distribuição geral e por categoria;
+- ✅ Identificação de outliers e padrões relevantes (ex: categorias com textos mais curtos ou longos).
+
+---
+
+*Trecho de código:*
+```python
+# Explodir palavras por linha
+from pyspark.sql.functions import explode
+
+df_exploded_limpo = df_tokens_filtrados_limpos.select("class_label", explode("tokens_filtrados").alias("token"))
+
+# Agrupa por categoria
+from pyspark.sql.functions import collect_list
+
+df_grouped_tokens = df_exploded_limpo.groupBy("class_label") \
+    .agg(collect_list("token").alias("all_tokens"))
+
+# Gerar unigramas, bigramas e trigramas
+
+import pandas as pd
+from nltk.util import ngrams
+from collections import Counter
+
+df_tokens_pd = df_grouped_tokens.toPandas()
+
+def extrair_top_ngrams(tokens, n, top_n=10):
+    return Counter(ngrams(tokens, n)).most_common(top_n)
+
+rows = []
+
+for _, row in df_tokens_pd.iterrows():
+    categoria = row["class_label"]
+    tokens = row["all_tokens"]
+
+    # Top palavras, bigramas e trigramas
+    top_unigrams = [uni[0] for uni in Counter(tokens).most_common(10)]
+    top_bigrams = [" ".join(bi) for bi, _ in extrair_top_ngrams(tokens, 2)]
+    top_trigrams = [" ".join(tri) for tri, _ in extrair_top_ngrams(tokens, 3)]
+
+    rows.append({
+        "class_label": categoria,
+        "top_10_unigrams": ", ".join(top_unigrams),
+        "top_10_bigrams": ", ".join(top_bigrams),
+        "top_10_trigrams": ", ".join(top_trigrams),
+    })
+
+df_ngrams_limpo = pd.DataFrame(rows)
+```
+---
+
+
+
