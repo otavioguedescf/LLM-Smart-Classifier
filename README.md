@@ -136,3 +136,35 @@ df_tokens_filtrados = remover.transform(df_tokens)
 # Visualizando o resultado
 display(df_tokens_filtrados.head(5))
 ```
+---
+
+### 1.4 Salvamento em formato Parquet
+
+**Objetivo:**  
+Persistir os dados pré-processados em um formato otimizado (`Parquet`), garantindo **eficiência de leitura**, **compactação de armazenamento** e **compatibilidade com processamento distribuído** em etapas futuras do projeto.
+
+---
+
+**Por que Parquet?**
+
+- ✅ Formato **colunar**, ideal para consultas analíticas;
+- ✅ Compatível com ferramentas distribuídas como PySpark;
+- ✅ Permite leitura seletiva de colunas, economizando tempo e recursos;
+- ✅ Otimiza a performance de etapas como vetorização e modelagem.
+
+---
+
+**Caminho de salvamento:**  
+`/FileStore/datasets/humaid_parquet`
+
+---
+
+*Trecho de código:*
+```python
+# Salvar DataFrame como .parquet
+df_tokens_filtrados.write.mode("overwrite").parquet("/tmp/humaid_dados_limpos")
+
+# Leitura futura:
+df_pronto= spark.read.parquet("/tmp/humaid_dados_limpos")
+df_pronto.show(5, truncate=False)
+```
