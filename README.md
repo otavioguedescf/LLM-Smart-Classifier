@@ -39,7 +39,7 @@ Ingerir os dados brutos no ambiente distribuído do PySpark, realizar o pré-pro
 - O dataset foi carregado diretamente no ambiente Databricks com PySpark, contendo aproximadamente **47.868 tweets** humanitários.
 - Cada linha representa uma mensagem classificada por categoria humanitária (como saúde, abrigo, comida, etc.).
 
-*Exemplo de leitura:*
+*Trecho de código:*
 ```python
 # Copiando o ZIP da DBFS para o sistema de arquivos local do cluster
 dbutils.fs.cp("dbfs:/FileStore/tables/humaid_eventwise.zip", "file:/tmp/humaid_eventwise.zip")
